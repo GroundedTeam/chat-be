@@ -1,5 +1,7 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { Message } from "./Message";
+import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+
+import { Chat } from "./chat";
+import { Message } from "./message";
 
 @Entity()
 export class User {
@@ -17,4 +19,7 @@ export class User {
 
     @OneToMany(type => Message, message => message.sender)
     public messages: Array<Message>;
+
+    @ManyToMany(type => Chat, chat => chat.users)
+    public chats: Array<Chat>;
 }

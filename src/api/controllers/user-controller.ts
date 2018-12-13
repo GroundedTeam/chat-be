@@ -1,9 +1,9 @@
 import { Get, JsonController } from "routing-controllers";
 import { getRepository, Repository } from "typeorm";
 
-import { User } from "../models/User";
+import { User } from "../models/user";
 
-@JsonController("/client")
+@JsonController("/users")
 export class UserController {
     private userRepo: Repository<User>;
 

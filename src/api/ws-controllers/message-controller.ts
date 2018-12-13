@@ -9,8 +9,8 @@ import {
 } from "socket-controllers";
 import { Service } from "typedi";
 
-import { User } from "../models/User";
-import { UserService } from "../services/UserService";
+import { User } from "../models/user";
+import { UserService } from "../services/user-service";
 
 @SocketController()
 export class MessageController {
@@ -25,8 +25,6 @@ export class MessageController {
         @SocketIO() io: any,
     ): Promise<any> {
         this.user = await this.userService.create();
-        // this.socketId = socketId;
-        // this.socket = socket;
 
         console.log(`User ${this.user.username} connected!`);
 
