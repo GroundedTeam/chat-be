@@ -11,7 +11,8 @@ export class ChatController {
     constructor(
         @Service() private chatService: ChatService,
         @Service() private userService: UserService,
-    ) {}
+    ) {
+    }
 
     @Get("")
     public async find(

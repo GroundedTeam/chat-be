@@ -1,7 +1,7 @@
 {
   "name": "Chat",
-  "version": "3.2.0",
-  "description": "A delightful way to building a Node.js RESTful API Services with beautiful code written in TypeScript",
+  "version": "0.0.1",
+  "description": "Server app for chat build with nodejs and express framework and typescipt",
   "main": "src/app.ts",
   "scripts": {
     "start": "nps",
@@ -14,20 +14,8 @@
     "node": ">=8.0.0"
   },
   "repository": "",
-  "keywords": [
-    "NodeJS",
-    "chat",
-    "socket"
-  ],
   "homepage": "No homepage yet",
   "author": "Andrii Prokhorovych",
-  "contributors": [
-    {
-      "name": "Andrii Prokhorovych",
-      "email": "prohorovychua@gmail.com",
-      "url": "https://github.com/myrkotyn"
-    }
-  ],
   "dependencies": {
     "axios": "^0.18.0",
     "bcrypt": "^3.0.0",
@@ -69,20 +57,6 @@
     "typescript": "2.8.3",
     "uuid": "^3.1.0",
     "winston": "^2.4.0"
-  },
-  "jest": {
-    "transform": {
-      ".(ts|tsx)": "<rootDir>/test/preprocessor.js"
-    },
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "json"
-    ],
-    "testEnvironment": "node",
-    "setupTestFrameworkScriptFile": "./test/unit/lib/setup.ts"
   },
   "license": "MIT",
   "devDependencies": {

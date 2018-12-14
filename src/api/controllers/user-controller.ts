@@ -11,7 +11,7 @@ export class UserController {
         this.userRepo = getRepository(User);
     }
 
-    @Get("/all")
+    @Get("/")
     public async findAll(): Promise<Array<User>> {
         return this.userRepo.find();
     }

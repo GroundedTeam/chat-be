@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Service } from "typedi";
 import { getRepository, Repository } from "typeorm";
+
 import { User } from "../models/user";
 
 @Service()
@@ -15,15 +16,12 @@ export class UserService {
         const user = new User();
         user.username = await this.getRandomUsername();
         user.avatar = this.getAvatarUrl(user.username);
-        user.status = 1;
         user.socketId = socketId;
 
         return this.userRepo.save(user);
     }
 
     public async updateStatus(user: User, status: number): Promise<User> {
-        user.status = status;
-
         return this.userRepo.save(user);
     }
 

@@ -5,10 +5,14 @@ import { User } from "./user";
 
 @Entity()
 export class Chat {
+    public static readonly CHAT_TYPE_PRIVATE = "private";
+
     @PrimaryGeneratedColumn()
     public id: number;
 
-    @Column()
+    @Column({
+        default: Chat.CHAT_TYPE_PRIVATE,
+    })
     public type: string;
 
     @OneToMany(type => Message, message => message.chat)

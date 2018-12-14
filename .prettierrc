@@ -1,7 +1,0 @@
-{
-    "trailingComma": "all",
-    "tabWidth": 4,
-    "semi": true,
-    "singleQuote": false,
-    "max-len": [2, { "code": 80, "ignorePattern": "^import\\W.*" }]
-}

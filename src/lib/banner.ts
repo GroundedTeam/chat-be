@@ -16,7 +16,7 @@ export function banner(log: Logger): void {
         log.info(`Version      : ${env.app.version}`);
         log.info(``);
         log.info(`API Info     : ${route()}${env.app.routePrefix}`);
-        log.info(`Monitor       : ${route()}${env.monitor.route}`);
+        log.info(`Monitor      : ${route()}${env.monitor.route}  <-- temporary does not work`);
         log.info("-------------------------------------------------------");
         log.info("");
     } else {

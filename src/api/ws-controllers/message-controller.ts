@@ -4,10 +4,11 @@ import {
     OnConnect,
     OnDisconnect,
     OnMessage,
-    SocketController,
+    SocketController, SocketIO,
 } from "socket-controllers";
 import { Service } from "typedi";
 
+import { Socket } from "socket.io";
 import { MessageService } from "../services/message-service";
 import { UserService } from "../services/user-service";
 
@@ -16,11 +17,15 @@ export class MessageController {
     constructor(
         @Service() private userService: UserService,
         @Service() private messageService: MessageService,
-    ) {}
+    ) {
+    }
 
     @OnConnect()
-    public async connection(@ConnectedSocket() socket: any): Promise<any> {
+    public async connection(@ConnectedSocket() socket: Socket): Promise<any> {
         const user = await this.userService.create(socket.id);
+
+        (socket as any).user = user;
+
         socket.emit("register", {
             type: "user",
             user,
@@ -43,10 +48,7 @@ export class MessageController {
     }
 
     @OnMessage("message")
-    public async save(
-        @ConnectedSocket() socket: any,
-        @MessageBody() messageBody: any,
-    ): Promise<any> {
+    public async save(@ConnectedSocket() socket: any, @MessageBody() messageBody: any): Promise<any> {
         const message = await this.messageService.create(messageBody);
 
         socket.to(message.chat.id).emit("new-message", {
@@ -60,18 +62,24 @@ export class MessageController {
     }
 
     @OnMessage("join-room")
-    public joinRoom(
-        @ConnectedSocket() socket: any,
-        @MessageBody() messageBody: any,
-    ): any {
+    public joinRoom(@ConnectedSocket() socket: any, @MessageBody() messageBody: any): any {
         socket.join(messageBody.roomId);
     }
 
     @OnMessage("leave-room")
-    public leaveRoom(
-        @ConnectedSocket() socket: any,
-        @MessageBody() messageBody: any,
-    ): any {
+    public leaveRoom(@ConnectedSocket() socket: any, @MessageBody() messageBody: any): any {
         socket.leave(messageBody.roomId);
+    }
+
+    @OnMessage("connection-list")
+    public connectionList(@ConnectedSocket() socket: any, @SocketIO() io: any): any {
+        const userIds = [];
+        for (let socketId in io.sockets.connected) {
+            if (io.sockets.connected.hasOwnProperty(socketId)) {
+                userIds.push(io.sockets.connected[socketId].user.id);
+            }
+        }
+
+        socket.emit("connection-list", { type: "connection-list", content: userIds });
     }
 }
