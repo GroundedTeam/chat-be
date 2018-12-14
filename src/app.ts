@@ -4,11 +4,21 @@ import { json, urlencoded } from "body-parser";
 import * as express from "express";
 import * as glob from "glob";
 import { createServer } from "http";
-import { useContainer as routingUseContainer, useExpressServer } from "routing-controllers";
-import { useContainer as useContainerSocket, useSocketServer } from "socket-controllers";
+import {
+    useContainer as routingUseContainer,
+    useExpressServer,
+} from "routing-controllers";
+import {
+    useContainer as useContainerSocket,
+    useSocketServer,
+} from "socket-controllers";
 import * as socketIo from "socket.io";
 import { Container } from "typedi";
-import { createConnection, getConnectionOptions, useContainer as ormUseContainer } from "typeorm";
+import {
+    createConnection,
+    getConnectionOptions,
+    useContainer as ormUseContainer,
+} from "typeorm";
 import * as winston from "winston";
 
 import { env } from "./env";
@@ -37,7 +47,8 @@ useExpressServer(app, {
     validation: true,
     controllers: [__dirname + "/api/controllers/*.ts"],
     // controllers: env.app.dirs.controllers,
-    middlewares: env.app.dirs.middlewares,
+    // middlewares: env.app.dirs.middlewares,
+    middlewares: [__dirname + "/api/middlewares/*.ts"],
 });
 useSocketServer(io, {
     controllers: [__dirname + "/api/ws-controllers/*.ts"],

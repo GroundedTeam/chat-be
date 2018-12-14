@@ -58,7 +58,7 @@ export const env = {
                 path.join(__dirname, "api/subscribers/**/*subscriber{.js,.ts}"),
             ]) as Array<string>,
             controllers: (getOsEnvArray("CONTROLLERS") || [
-                path.join(__dirname, "api/controllers/**/*Controller{.js,.ts}"),
+                path.join(__dirname, "api/controllers/**/*controller{.js,.ts}"),
             ]) as Array<string>,
             middlewares: (getOsEnvArray("MIDDLEWARES") || [
                 path.join(__dirname, "api/middlewares/**/*middleware{.js,.ts}"),

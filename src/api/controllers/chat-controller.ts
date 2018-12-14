@@ -1,4 +1,5 @@
-import { Body, Get, JsonController, NotFoundError, Post, QueryParam } from "routing-controllers";
+import { Response } from "express";
+import { Body, Get, JsonController, NotFoundError, Post, QueryParam, Res } from "routing-controllers";
 import { Service } from "typedi";
 
 import { Chat } from "../models/chat";
@@ -16,7 +17,8 @@ export class ChatController {
     public async find(
         @QueryParam("senderId") senderId: number,
         @QueryParam("receiverId") receiverId: number,
-    ): Promise<Chat> {
+        @Res() response: Response,
+    ): Promise<Chat | Response> {
         if (!senderId) {
             throw new NotFoundError("Sender was not found!");
         }
@@ -24,8 +26,8 @@ export class ChatController {
             throw new NotFoundError("Receiver was not found!");
         }
         const chat = await this.chatService.find(senderId, receiverId);
-        if (!chat) {
-            throw new NotFoundError("Chat was not found!");
+        if (chat === undefined) {
+            return response.status(204).send("Nothing was found");
         }
 
         return chat;

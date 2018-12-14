@@ -5,51 +5,73 @@ import {
     OnDisconnect,
     OnMessage,
     SocketController,
-    SocketIO,
 } from "socket-controllers";
 import { Service } from "typedi";
 
-import { User } from "../models/user";
+import { MessageService } from "../services/message-service";
 import { UserService } from "../services/user-service";
 
 @SocketController()
 export class MessageController {
-    private user: User;
-    // private socket: any;
-
-    constructor(@Service() private userService: UserService) {}
+    constructor(
+        @Service() private userService: UserService,
+        @Service() private messageService: MessageService,
+    ) {}
 
     @OnConnect()
-    public async connection(
-        @ConnectedSocket() socket: any,
-        @SocketIO() io: any,
-    ): Promise<any> {
-        this.user = await this.userService.create();
+    public async connection(@ConnectedSocket() socket: any): Promise<any> {
+        const user = await this.userService.create(socket.id);
+        socket.emit("register", {
+            type: "user",
+            user,
+        });
 
-        console.log(`User ${this.user.username} connected!`);
-
-        io.to(socket.id).emit("register", {
-            type: "new-user",
-            text: this.user,
+        socket.broadcast.emit("new-user-connected", {
+            type: "connected-user",
+            user,
         });
     }
 
     @OnDisconnect()
     public async disconnect(@ConnectedSocket() socket: any): Promise<any> {
-        await this.userService.updateStatus(this.user, 0);
-        console.log(`client ${this.user.username} disconnected`);
+        const user = await this.userService.findBySocketId(socket.id);
+        await this.userService.updateStatus(user, 0);
+        socket.broadcast.emit("user-disconnected", {
+            type: "disconnected-user",
+            user,
+        });
     }
 
-    @OnMessage("save")
-    public save(
+    @OnMessage("message")
+    public async save(
         @ConnectedSocket() socket: any,
-        @MessageBody() message: string,
+        @MessageBody() messageBody: any,
+    ): Promise<any> {
+        const message = await this.messageService.create(messageBody);
+
+        socket.to(message.chat.id).emit("new-message", {
+            type: "new-message",
+            content: {
+                text: message.text,
+                sender: message.sender,
+                time: message.createdAt,
+            },
+        });
+    }
+
+    @OnMessage("join-room")
+    public joinRoom(
+        @ConnectedSocket() socket: any,
+        @MessageBody() messageBody: any,
     ): any {
-        console.log("received message:", message);
-        console.log(
-            "setting id to the message and sending it back to the client",
-        );
-        message = "Some message";
-        socket.emit("message_saved", message);
+        socket.join(messageBody.roomId);
+    }
+
+    @OnMessage("leave-room")
+    public leaveRoom(
+        @ConnectedSocket() socket: any,
+        @MessageBody() messageBody: any,
+    ): any {
+        socket.leave(messageBody.roomId);
     }
 }

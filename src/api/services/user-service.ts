@@ -11,11 +11,12 @@ export class UserService {
         this.userRepo = getRepository(User);
     }
 
-    public async create(): Promise<User> {
+    public async create(socketId: string): Promise<User> {
         const user = new User();
         user.username = await this.getRandomUsername();
         user.avatar = this.getAvatarUrl(user.username);
         user.status = 1;
+        user.socketId = socketId;
 
         return this.userRepo.save(user);
     }
@@ -28,6 +29,10 @@ export class UserService {
 
     public async findById(id: number): Promise<User> {
         return this.userRepo.findOne(id);
+    }
+
+    public async findBySocketId(id: string): Promise<User> {
+        return this.userRepo.findOne({ socketId: id });
     }
 
     private async getRandomUsername(): Promise<string> {
