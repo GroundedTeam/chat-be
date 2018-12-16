@@ -21,7 +21,6 @@ export class MessageController {
 
         const user = await this.userService.create(socket.id, type, username);
 
-        console.log(user);
         (socket as any).user = user;
 
         socket.emit("register", {

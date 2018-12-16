@@ -9,9 +9,9 @@ import { UserRepository } from "../repositories/user-repository";
 @Service()
 export class MessageService {
     constructor(
-        @OrmRepository() private chatRepo: ChatRepository,
-        @OrmRepository() private userRepo: UserRepository,
-        @OrmRepository() private messageRepo: MessageRepository,
+        @OrmRepository() private chatRepository: ChatRepository,
+        @OrmRepository() private userRepository: UserRepository,
+        @OrmRepository() private messageRepository: MessageRepository,
     ) {
     }
 
@@ -20,13 +20,13 @@ export class MessageService {
 
         const [chat, sender] = await Promise
             .all([
-                this.chatRepo.findOne(roomId),
-                this.userRepo.findOne(senderId),
+                this.chatRepository.findOne(roomId),
+                this.userRepository.findOne(senderId),
             ]);
         message.chat = chat;
         message.sender = sender;
         message.text = text;
 
-        return this.messageRepo.save(message);
+        return this.messageRepository.save(message);
     }
 }

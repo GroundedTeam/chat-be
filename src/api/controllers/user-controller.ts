@@ -5,14 +5,14 @@ import { User } from "../models/user";
 
 @JsonController("/users")
 export class UserController {
-    private userRepo: Repository<User>;
+    private userRepository: Repository<User>;
 
     constructor() {
-        this.userRepo = getRepository(User);
+        this.userRepository = getRepository(User);
     }
 
     @Get("/")
     public async findAll(): Promise<Array<User>> {
-        return this.userRepo.find();
+        return this.userRepository.find();
     }
 }

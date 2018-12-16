@@ -8,12 +8,12 @@ import { MessageRepository } from "../repositories/message-repository";
 
 @JsonController("/messages")
 export class MessageController {
-    constructor(@OrmRepository() private messageRepo: MessageRepository) {}
+    constructor(@OrmRepository() private messageRepository: MessageRepository) {}
 
     @Get("/:id")
     public async find(
         @EntityFromParam("id") chat: Chat,
     ): Promise<Array<Message>> {
-        return await this.messageRepo.findByChat(chat);
+        return await this.messageRepository.findByChat(chat);
     }
 }

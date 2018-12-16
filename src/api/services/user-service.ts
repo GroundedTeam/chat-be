@@ -6,18 +6,20 @@ import { User } from "../models/user";
 
 @Service()
 export class UserService {
-    private userRepo: Repository<User>;
+    private userRepository: Repository<User>;
     private randomUsernameApi = "https://randomuser.me/api";
     private avatarApi = "https://avatars.dicebear.com/v2/male";
 
     constructor() {
-        this.userRepo = getRepository(User);
+        this.userRepository = getRepository(User);
     }
 
     public async create(socketId: string, type: string = User.TYPE_USER, username: string): Promise<User> {
         if (type === User.TYPE_BOT) {
-            const bot = await this.userRepo.findOne({ username });
+            const bot = await this.userRepository.findOne({ username });
             if (bot) {
+                bot.socketId = socketId;
+                await this.userRepository.save(bot);
                 return bot;
             }
         }
@@ -31,15 +33,15 @@ export class UserService {
         user.socketId = socketId;
         user.type = type;
 
-        return this.userRepo.save(user);
+        return this.userRepository.save(user);
     }
 
     public async findById(id: number): Promise<User> {
-        return this.userRepo.findOne(id);
+        return this.userRepository.findOne(id);
     }
 
     public async findBySocketId(id: string): Promise<User> {
-        return this.userRepo.findOne({ socketId: id });
+        return this.userRepository.findOne({ socketId: id });
     }
 
     private async getRandomUsername(): Promise<string> {
