@@ -2,9 +2,9 @@ import { ConnectedSocket, MessageBody, OnConnect, OnDisconnect, OnMessage, Socke
 import { Service } from "typedi";
 
 import { Socket } from "socket.io";
+import { User } from "../models/user";
 import { MessageService } from "../services/message-service";
 import { UserService } from "../services/user-service";
-import { User } from "../models/user";
 
 @SocketController()
 export class MessageController {
