@@ -13,6 +13,9 @@ import { Message } from "./message";
     name: "users",
 })
 export class User {
+    public static readonly TYPE_USER = "user";
+    public static readonly TYPE_BOT = "bot";
+
     @PrimaryGeneratedColumn()
     public id: number;
 
@@ -27,6 +30,11 @@ export class User {
         nullable: true,
     })
     public socketId: string;
+
+    @Column({
+        default: User.TYPE_USER,
+    })
+    public type: string;
 
     @OneToMany(type => Message, message => message.sender, { onDelete: "CASCADE" })
     public messages: Array<Message>;

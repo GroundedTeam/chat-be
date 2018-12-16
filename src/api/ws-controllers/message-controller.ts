@@ -1,16 +1,10 @@
-import {
-    ConnectedSocket,
-    MessageBody,
-    OnConnect,
-    OnDisconnect,
-    OnMessage,
-    SocketController, SocketIO,
-} from "socket-controllers";
+import { ConnectedSocket, MessageBody, OnConnect, OnDisconnect, OnMessage, SocketController, SocketIO } from "socket-controllers";
 import { Service } from "typedi";
 
 import { Socket } from "socket.io";
 import { MessageService } from "../services/message-service";
 import { UserService } from "../services/user-service";
+import { User } from "../models/user";
 
 @SocketController()
 export class MessageController {
@@ -22,8 +16,12 @@ export class MessageController {
 
     @OnConnect()
     public async connection(@ConnectedSocket() socket: Socket): Promise<any> {
-        const user = await this.userService.create(socket.id);
+        const type = socket.handshake.query.type;
+        const username = socket.handshake.query.name;
 
+        const user = await this.userService.create(socket.id, type, username);
+
+        console.log(user);
         (socket as any).user = user;
 
         socket.emit("register", {
@@ -40,7 +38,6 @@ export class MessageController {
     @OnDisconnect()
     public async disconnect(@ConnectedSocket() socket: any): Promise<any> {
         const user = await this.userService.findBySocketId(socket.id);
-        await this.userService.updateStatus(user, 0);
         socket.broadcast.emit("user-disconnected", {
             type: "disconnected-user",
             user,
@@ -49,15 +46,24 @@ export class MessageController {
 
     @OnMessage("message")
     public async save(@ConnectedSocket() socket: any, @MessageBody() messageBody: any): Promise<any> {
+        let receiverSocket;
         const message = await this.messageService.create(messageBody);
+        const receiver = await this.userService.findById(messageBody.receiverId);
 
-        socket.to(message.chat.id).emit("new-message", {
+        if (receiver.type === User.TYPE_USER) {
+            receiverSocket = message.chat.id;
+        } else {
+            receiverSocket = receiver.socketId;
+        }
+
+        socket.to(receiverSocket).emit("new-message", {
             type: "new-message",
             content: {
                 text: message.text,
                 sender: message.sender,
                 time: message.createdAt,
             },
+            chatId: message.chatId,
         });
     }
 
@@ -74,7 +80,7 @@ export class MessageController {
     @OnMessage("connection-list")
     public connectionList(@ConnectedSocket() socket: any, @SocketIO() io: any): any {
         const userIds = [];
-        for (let socketId in io.sockets.connected) {
+        for (const socketId in io.sockets.connected) {
             if (io.sockets.connected.hasOwnProperty(socketId)) {
                 userIds.push(io.sockets.connected[socketId].user.id);
             }

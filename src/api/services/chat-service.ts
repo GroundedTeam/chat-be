@@ -7,11 +7,11 @@ import { ChatRepository } from "../repositories/chat-repository";
 
 @Service()
 export class ChatService {
-    constructor(@OrmRepository() private chatRepo: ChatRepository) {
+    constructor(@OrmRepository() private chatRepository: ChatRepository) {
     }
 
     public async find(senderId: number, receiverId: number): Promise<Chat> {
-        return this.chatRepo.findChatByUsers([senderId, receiverId], Chat.CHAT_TYPE_PRIVATE);
+        return this.chatRepository.findChatByUsers([senderId, receiverId], Chat.CHAT_TYPE_PRIVATE);
     }
 
     public async create({ sender, receiver }: { sender: User, receiver: User }): Promise<Chat> {
@@ -19,6 +19,10 @@ export class ChatService {
         chat.users = [sender, receiver];
         chat.type = Chat.CHAT_TYPE_PRIVATE;
 
-        return this.chatRepo.save(chat);
+        return this.chatRepository.save(chat);
+    }
+
+    public async findByUser(user: User): Promise<Array<Chat>> {
+        return this.chatRepository.findByUser(user.id);
     }
 }
