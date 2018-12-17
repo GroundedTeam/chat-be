@@ -1,7 +1,3 @@
-export function getOsEnvArray(key: string, delimiter: string = ","): Array<string> | boolean {
-    return process.env[key] && process.env[key].split(delimiter) || false;
-}
-
 export function toBool(value: string): boolean {
     return value === "true";
 }

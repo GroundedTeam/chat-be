@@ -1,2 +1,2 @@
-export * from "./Logger";
-export * from "./LoggerInterface";
+export * from "./logger";
+export * from "./logger-interface";

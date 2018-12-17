@@ -1,7 +1,7 @@
 import { ConnectedSocket, MessageBody, OnConnect, OnDisconnect, OnMessage, SocketController, SocketIO } from "socket-controllers";
+import { Socket } from "socket.io";
 import { Service } from "typedi";
 
-import { Socket } from "socket.io";
 import { User } from "../models/user";
 import { MessageService } from "../services/message-service";
 import { UserService } from "../services/user-service";
@@ -15,9 +15,8 @@ export class MessageController {
     }
 
     @OnConnect()
-    public async connection(@ConnectedSocket() socket: Socket): Promise<any> {
-        const type = socket.handshake.query.type;
-        const username = socket.handshake.query.name;
+    public async connection(@ConnectedSocket() socket: Socket): Promise<void> {
+        const { type, username } = socket.handshake.query;
 
         const user = await this.userService.create(socket.id, type, username);
 
@@ -35,7 +34,7 @@ export class MessageController {
     }
 
     @OnDisconnect()
-    public async disconnect(@ConnectedSocket() socket: any): Promise<any> {
+    public async disconnect(@ConnectedSocket() socket: Socket): Promise<void> {
         const user = await this.userService.findBySocketId(socket.id);
         socket.broadcast.emit("user-disconnected", {
             type: "disconnected-user",
@@ -44,15 +43,13 @@ export class MessageController {
     }
 
     @OnMessage("message")
-    public async save(@ConnectedSocket() socket: any, @MessageBody() messageBody: any): Promise<any> {
-        let receiverSocket;
+    public async save(@ConnectedSocket() socket: Socket, @MessageBody() messageBody: any): Promise<void> {
         const message = await this.messageService.create(messageBody);
         const receiver = await this.userService.findById(messageBody.receiverId);
 
+        let receiverSocket = receiver.socketId;
         if (receiver.type === User.TYPE_USER) {
-            receiverSocket = message.chat.id;
-        } else {
-            receiverSocket = receiver.socketId;
+            receiverSocket = String(message.chat.id);
         }
 
         socket.to(receiverSocket).emit("new-message", {
@@ -67,17 +64,17 @@ export class MessageController {
     }
 
     @OnMessage("join-room")
-    public joinRoom(@ConnectedSocket() socket: any, @MessageBody() messageBody: any): any {
+    public joinRoom(@ConnectedSocket() socket: Socket, @MessageBody() messageBody: any): void {
         socket.join(messageBody.roomId);
     }
 
     @OnMessage("leave-room")
-    public leaveRoom(@ConnectedSocket() socket: any, @MessageBody() messageBody: any): any {
+    public leaveRoom(@ConnectedSocket() socket: Socket, @MessageBody() messageBody: any): void {
         socket.leave(messageBody.roomId);
     }
 
     @OnMessage("connection-list")
-    public connectionList(@ConnectedSocket() socket: any, @SocketIO() io: any): any {
+    public connectionList(@ConnectedSocket() socket: Socket, @SocketIO() io: any): void {
         const userIds = [];
         for (const socketId in io.sockets.connected) {
             if (io.sockets.connected.hasOwnProperty(socketId)) {

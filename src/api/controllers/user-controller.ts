@@ -1,18 +1,16 @@
 import { Get, JsonController } from "routing-controllers";
-import { getRepository, Repository } from "typeorm";
+import { Service } from "typedi";
 
 import { User } from "../models/user";
+import { UserService } from "../services/user-service";
 
 @JsonController("/users")
 export class UserController {
-    private userRepository: Repository<User>;
-
-    constructor() {
-        this.userRepository = getRepository(User);
+    constructor(@Service() private userService: UserService) {
     }
 
     @Get("/")
     public async findAll(): Promise<Array<User>> {
-        return this.userRepository.find();
+        return this.userService.findAll();
     }
 }

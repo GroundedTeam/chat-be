@@ -44,6 +44,10 @@ export class UserService {
         return this.userRepository.findOne({ socketId: id });
     }
 
+    public findAll(): Promise<Array<User>> {
+        return this.userRepository.find();
+    }
+
     private async getRandomUsername(): Promise<string> {
         try {
             const randomUserJSON = await axios.get(this.randomUsernameApi);
