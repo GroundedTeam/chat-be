@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv-safe";
 import * as path from "path";
 
-import { getOsEnvArray, normalizePort, toBool } from "./lib/env";
+import { normalizePort, toBool } from "./lib/env";
 
 /**
  * Load .env file or for tests the .env.test file.
@@ -36,31 +36,30 @@ export const env = {
         port: normalizePort(process.env.PORT || process.env.APP_PORT),
         banner: toBool(process.env.APP_BANNER),
         dirs: {
-            migrations: (getOsEnvArray("TYPEORM_MIGRATIONS") || [
+            migrations: ([
                 path.relative(
                     path.join(process.cwd()),
                     path.join(__dirname, "database/migrations/**/*.ts"),
                 ),
             ]) as Array<string>,
             migrationsDir:
-                process.env.TYPEORM_MIGRATIONS_DIR ||
                 path.relative(
                     path.join(process.cwd()),
                     path.join(__dirname, "database/migrations"),
                 ),
-            entities: (getOsEnvArray("TYPEORM_ENTITIES") || [
+            entities: ([
                 path.relative(
                     path.join(process.cwd()),
                     path.join(__dirname, "api/models/**/*{.js,.ts}"),
                 ),
             ]) as Array<string>,
-            subscribers: (getOsEnvArray("TYPEORM_SUBSCRIBERS") || [
+            subscribers: ([
                 path.join(__dirname, "api/subscribers/**/*subscriber{.js,.ts}"),
             ]) as Array<string>,
-            controllers: (getOsEnvArray("CONTROLLERS") || [
+            controllers: ([
                 path.join(__dirname, "api/controllers/**/*controller{.js,.ts}"),
             ]) as Array<string>,
-            middlewares: (getOsEnvArray("MIDDLEWARES") || [
+            middlewares: ([
                 path.join(__dirname, "api/middlewares/**/*middleware{.js,.ts}"),
             ]) as Array<string>,
         },

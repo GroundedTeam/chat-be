@@ -45,10 +45,8 @@ useExpressServer(app, {
     defaultErrorHandler: false,
     classTransformer: true,
     validation: true,
-    controllers: [__dirname + "/api/controllers/*.ts"],
-    // controllers: env.app.dirs.controllers,
-    // middlewares: env.app.dirs.middlewares,
-    middlewares: [__dirname + "/api/middlewares/*.ts"],
+    controllers: env.app.dirs.controllers,
+    middlewares: env.app.dirs.middlewares,
 });
 useSocketServer(io, {
     controllers: [__dirname + "/api/ws-controllers/*.ts"],
