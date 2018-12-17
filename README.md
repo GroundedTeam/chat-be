@@ -5,6 +5,9 @@ This is backend part of app based on NodeJS with ExpressJS framework.
 
 The frontend [link](https://github.com/GroundedTeam/chat-fe)
 
+# Start
+`yarn start serve`
+
 ## Main libraries
 
 - [ExpressJS](https://expressjs.com)
